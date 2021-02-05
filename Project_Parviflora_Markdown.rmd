@@ -1,0 +1,318 @@
+---
+title: "Parviflora Project"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: rows
+    vertical_layout: fill
+    source_code: embed
+---
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+library(knitr)
+library(DT)
+library(rpivotTable)
+library(ggplot2)
+library(plotly)
+library(dplyr)
+library(openintro)
+library(highcharter)
+library(ggvis)
+library(dygraphs)
+library(quantmod)
+```
+
+```{r}
+source("Project_Parviflora.r")
+```
+
+
+```{r}
+mycolors <- c("blue", "#FFC125", "darkgreen", "darkorange")
+```
+
+DASHBOARD
+=====================================
+Row
+-------------------------------
+### TOTAL REVENUE
+
+```{r}
+valueBox(round(sum(Sum_of_quarter$TOTAL, na.rm = TRUE),0),
+         color = "darkgreen")
+```
+
+### NUMBER OF FLOWER SOLD
+
+```{r}
+valueBox(sum(Sum_of_quarter$COUNT_TOTAL, na.rm = TRUE),
+         color = "darkorange")
+```
+
+### NUMBER OF STORES
+
+```{r}
+valueBox(nrow(Sum_of_quarter),
+         color = "#FFC125")
+```
+
+
+Row
+-------------------------------
+
+### Number of Azalea
+
+```{r}
+valueBox(sum(Sum_of_quarter$COUNT, na.rm = TRUE))
+```
+
+
+### Azalea $
+
+```{r}
+valueBox(sum(round(Sum_of_quarter$AZALEA,0), na.rm = TRUE))
+```
+
+### Number of BEGONIA
+
+```{r}
+valueBox(sum(as.numeric(Sum_of_quarter$COUNT_1), na.rm = TRUE))
+```
+
+### BEGONIA $ 
+
+```{r}
+valueBox(round(sum((Sum_of_quarter$BEGONIA), na.rm = TRUE),0))
+```
+
+### Number of CARNATION
+
+```{r}
+valueBox(sum(Sum_of_quarter$COUNT_2, na.rm = TRUE))
+```
+
+### CARNATION $
+
+```{r}
+valueBox(round(sum(Sum_of_quarter$CARNATION, na.rm = TRUE),0))
+```
+
+### Number of DAFFODIL
+
+```{r}
+valueBox(sum(Sum_of_quarter$COUNT_3, na.rm = TRUE))
+```
+
+
+### DAFFODIL $
+
+```{r}
+valueBox(round(sum(Sum_of_quarter$DAFFODIL, na.rm = TRUE),0))
+```
+
+Row
+-------------------------------
+
+### TOTAL REVENUE BY STORES
+
+```{r}
+Sum_of_quarter %>%
+         plot_ly(x = ~`Store Name`,
+                 y = ~TOTAL,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "TOTAL REVENUE BY STORES"),
+yaxis = list(title = 'TOTAL'))
+```
+
+
+### AMOUNT OF FLOWERS SOLD BY STORES
+
+```{r}
+Sum_of_quarter %>%
+         plot_ly(x = ~`Store Name`,
+                 y = ~COUNT_TOTAL,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "AMOUNT OF FLOWERS SOLD BY STORES"),
+yaxis = list(title = 'AMOUNT OF FLOWER'))
+```
+
+Q1 Monthly Data Summary
+=====================================
+
+Row
+---------------------------
+### Q1 Monthly Data Summary
+```{r}
+datatable(Sum_of_quarter,
+          caption = "Quarter 1 Summary",
+          rownames = T,
+          filter = "top",
+          options = list(pageLength = 13))
+```
+
+Q1 Monthly Graph
+=====================================
+
+Row
+-------------------------------
+### JANUARY Total Sales By Stores
+```{r}
+ID_list[[2]] %>%
+         plot_ly(x = ~`Store Name`,
+                 y = ~`TOTAL`,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "JAN Total Sales By Stores"),
+yaxis = list(title = 'TOTAL'))
+```
+
+### FEBRUARY Total Sales By Stores
+```{r}
+ID_list[[1]] %>%
+         plot_ly(x = ~`Store Name`,
+                 y = ~`TOTAL`,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "FEB Total Sales By Stores"),
+yaxis = list(title = 'TOTAL'))
+```
+
+### MARCH Total Sales By Stores
+```{r}
+ID_list[[3]] %>%
+         plot_ly(x = ~`Store Name`,
+                 y = ~`TOTAL`,
+                 color = "blue",
+                 type = 'bar') %>%
+layout(xaxis = list(title = "MAR Total Sales By Stores"),
+yaxis = list(title = 'TOTAL'))
+```
+
+Row
+-------------------------------
+### JANUARY TOP7 STORES
+```{r}
+
+ID_list[[2]] %>%
+         top_n(7, TOTAL) %>%
+         plot_ly(labels = ~`Store Name`,
+                 values = ~TOTAL,
+                 marker = list(colors = mycolors)) %>%
+         add_pie(hole = 0.2) %>%
+         layout(xaxis = list(zeroline = F,
+                             showline = F,
+                             showticklabels = F,
+                             showgrid = F),
+                yaxis = list(zeroline = F,
+                             showline = F,
+                             showticklabels=F,
+                             showgrid=F))
+
+ 
+
+```
+
+### FEBRUARY TOP7 STORES
+
+```{r}
+
+ID_list[[1]] %>%
+         top_n(7, TOTAL) %>%
+         plot_ly(labels = ~`Store Name`,
+                 values = ~TOTAL,
+                 marker = list(colors = mycolors)) %>%
+         add_pie(hole = 0.2) %>%
+         layout(xaxis = list(zeroline = F,
+                             showline = F,
+                             showticklabels = F,
+                             showgrid = F),
+                yaxis = list(zeroline = F,
+                             showline = F,
+                             showticklabels=F,
+                             showgrid=F))
+
+ 
+
+```
+
+
+### MARCH TOP7 STORES
+
+```{r}
+
+ID_list[[3]] %>%
+         top_n(7, TOTAL) %>%
+         plot_ly(labels = ~`Store Name`,
+                 values = ~TOTAL,
+                 marker = list(colors = mycolors)) %>%
+         add_pie(hole = 0.2) %>%
+         layout(xaxis = list(zeroline = F,
+                             showline = F,
+                             showticklabels = F,
+                             showgrid = F),
+                yaxis = list(zeroline = F,
+                             showline = F,
+                             showticklabels=F,
+                             showgrid=F))
+
+ 
+
+```
+
+Q1 Boxplots
+=====================================   
+
+Row
+-------------------------------
+
+### Boxplot : AMOUNT OF FLOWERS SOLD
+
+```{r}
+boxplot(Sum_of_quarter$COUNT,Sum_of_quarter$COUNT_1,Sum_of_quarter$COUNT_2,Sum_of_quarter$COUNT_3,xlab="Flower",ylab='Amount Sold',names = c('Azalea','Begonia','Carnation','Daffodil'),col =c('darkgreen','gold',"lightgray",'orange'))
+```
+
+### Boxplot : REVUNUE OF FLOWERS SOLD BY STORES
+
+```{r}
+boxplot(Sum_of_quarter$AZALEA,Sum_of_quarter$BEGONIA,Sum_of_quarter$CARNATION, xlab="Flower",ylab='Revenue',names = c('Azalea','Begonia','Carnation'),col =c('darkgreen','gold',"lightgray",'orange'))
+```
+
+### Boxplot : REVENUE OF DAFFODILS
+
+```{r}
+boxplot(Sum_of_quarter$DAFFODIL, xlab="Daffodil",ylab='Revenue',col ='orange')
+```
+
+Row
+-------------------------------
+
+### Histogram: TOTAL REVENUE  
+```{r}
+hist(Sum_of_quarter$TOTAL, xlab="Total Revenue",ylab='Frequency',col ='orange',main='Frequency Distribution of Total Revenue')
+```
+
+### Histogram: Total Count Sold
+    ```{r}
+hist(Sum_of_quarter$COUNT_TOTAL, xlab="Total Count Sold",ylab='Frequency',col ='orange',main='Frequency Distribution of Total Count Sold')
+```
+
+
+Q1 Outliers
+=====================================   
+
+### Store Outliers
+```{r}
+
+for(i in 1:length(boxplot.stats(Sum_of_quarter$AZALEA)$out)){
+  print(Sum_of_quarter$`Store Name`[which(Sum_of_quarter$AZALEA==boxplot.stats(Sum_of_quarter$AZALEA)$out[i])])
+}
+for(i in 1:length(boxplot.stats(Sum_of_quarter$BEGONIA)$out)){
+  print(Sum_of_quarter$`Store Name`[which(Sum_of_quarter$BEGONIA==boxplot.stats(Sum_of_quarter$BEGONIA)$out[i])])
+}
+for(i in 1:length(boxplot.stats(Sum_of_quarter$DAFFODIL)$out)){
+  print(Sum_of_quarter$`Store Name`[which(Sum_of_quarter$DAFFODIL==boxplot.stats(Sum_of_quarter$DAFFODIL)$out[i])])
+}
+
+```
